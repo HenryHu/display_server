@@ -9,11 +9,11 @@ import dblib
 
 from flask import Flask, request, render_template, g
 app = Flask("Display Server")
-dblib.app = app
+db = dblib.DB(app)
 
 @app.teardown_appcontext
 def teardown(exception):
-    dblib.teardown()
+    db.teardown()
 
 def run_command(command, args):
     app.logger.info("running %s %s" % (command, args))
@@ -63,7 +63,7 @@ def page():
     autorefresh = request.args.get('autorefresh', 'true')
 
     items = []
-    for item in dblib.query_db("select * from items"):
+    for item in db.query_db("select * from items"):
         items.append(item)
     return render_template('page.html', items=items, autorefresh=autorefresh)
 
@@ -74,12 +74,12 @@ def additem():
     if not title and not content:
         return 'error: nothing to add'
     if not title: title = '<no title>'
-    dblib.execute_db("insert into items (title, content) values (?, ?)", [title, content])
+    db.execute_db("insert into items (title, content) values (?, ?)", [title, content])
     return 'added'
 
 @app.route('/delitem/<int:index>')
 def delitem(index):
     if not index:
         return 'error: nothing to delete'
-    dblib.execute_db("delete from items where idx = ?", [index])
+    db.execute_db("delete from items where idx = ?", [index])
     return 'deleted'
