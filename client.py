@@ -10,6 +10,7 @@ def call(url, args={}):
     for key, value in args.items():
         if first:
             url += '?'
+            first = False
         else:
             url += '&'
         url += '%s=%s' % (key, value)
@@ -22,9 +23,9 @@ def notify(args):
     call('notify/%s' % title)
 
 def additem(args):
-    call('additem', {'title': args[0]})
+    call('additem', {'title': args[0], 'content': args[1]})
 
-def additem(args):
+def delitem(args):
     idx = args[0]
     call('delitem/%s' % idx)
 
