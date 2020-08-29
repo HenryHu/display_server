@@ -5,10 +5,41 @@ import subprocess
 import glob
 import logging
 
-from flask import Flask, request
+import sqlite3
+from flask import Flask, request, render_template, g
 app = Flask("Display Server")
 
 logger = logging.getLogger("main")
+
+PAGE_DB = 'page.db'
+
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(PAGE_DB)
+        db.row_factory = sqlite3.Row
+
+        with app.open_resource('schema.sql', mode='r') as schema:
+            db.cursor().executescript(schema.read())
+        db.commit()
+    return db
+
+def execute_db(query, args=()):
+    db = get_db()
+    db.execute(query, args)
+    db.commit()
+
+def query_db(query, args=()):
+    cur = get_db().execute(query, args)
+    rv = cur.fetchall()
+    cur.close()
+    return rv
+
+@app.teardown_appcontext
+def close_connection(exception):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
 
 def run_command(command, args):
     logger.info("running %s %s" % (command, args))
@@ -19,8 +50,8 @@ def run_command(command, args):
     return True
 
 @app.route('/')
-def hello_world():
-    return 'hello world'
+def root():
+    return 'running'
 
 @app.route('/notify/<title>')
 def notify(title):
@@ -55,4 +86,26 @@ def notify(title):
 
 @app.route('/page')
 def page():
-    return 'page'
+    autorefresh = request.args.get('autorefresh', 'true')
+
+    items = []
+    for item in query_db("select * from items"):
+        items.append(item)
+    return render_template('page.html', items=items, autorefresh=autorefresh)
+
+@app.route('/additem')
+def additem():
+    title = request.args.get('title', '')
+    content = request.args.get('content', '')
+    if not title and not content:
+        return 'error: nothing to add'
+    if not title: title = '<no title>'
+    execute_db("insert into items (title, content) values (?, ?)", [title, content])
+    return 'added'
+
+@app.route('/delitem/<int:index>')
+def delitem(index):
+    if not index:
+        return 'error: nothing to delete'
+    execute_db("delete from items where idx = ?", [index])
+    return 'deleted'

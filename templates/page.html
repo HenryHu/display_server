@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+    <head>
+        {% if autorefresh %}
+        <meta http-equiv="refresh" content="5">
+        {% endif %}
+        <title>Items</title>
+        <style>
+            ul {
+                font-size: 2em;
+            }
+        </style>
+    </head>
+    <body>
+        <ul id="items">
+            {% for item in items %}
+            <li>{{ item["idx"] }} <b>{{ item["title"] }}</b> {{ item["content"] }}</li>
+            {% endfor %}
+        </ul>
+    </body>
+</html>
