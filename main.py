@@ -11,7 +11,7 @@ app = Flask("Display Server")
 
 logger = logging.getLogger("main")
 
-PAGE_DB = 'page.db'
+PAGE_DB = 'db/page.db'
 
 def get_db():
     db = getattr(g, '_database', None)
