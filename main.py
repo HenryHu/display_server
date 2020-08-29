@@ -9,8 +9,6 @@ import sqlite3
 from flask import Flask, request, render_template, g
 app = Flask("Display Server")
 
-logger = logging.getLogger("main")
-
 PAGE_DB = 'db/page.db'
 
 def get_db():
@@ -42,7 +40,7 @@ def close_connection(exception):
         db.close()
 
 def run_command(command, args):
-    logger.info("running %s %s" % (command, args))
+    app.logger.info("running %s %s" % (command, args))
     try:
         subprocess.check_output(["env", "DISPLAY=:0", command, *args])
     except:
