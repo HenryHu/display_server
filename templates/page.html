@@ -9,13 +9,30 @@
             ul {
                 font-size: 2em;
             }
+            .half {
+                width: 50%;
+            }
+            .bigtitle {
+                margin-top: 0;
+                line-height: 1em;
+                font-weight: bold;
+                font-size: 2em;
+            }
         </style>
     </head>
     <body>
-        <ul id="items">
-            {% for item in items %}
-            <li>{{ item["idx"] }} <b>{{ item["title"] }}</b> {{ item["content"] }}</li>
-            {% endfor %}
-        </ul>
+        <div style='width: 100%; display:inline-flex'>
+            <div class='half'>
+                <p class="bigtitle">Items</p>
+                <ul id="items">
+                    {% for item in items %}
+                    <li>{{ item["idx"] }} <b>{{ item["title"] }}</b> {{ item["content"] }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class='half'>
+                <p class="bigtitle">News</p>
+            </div>
+        </div>
     </body>
 </html>
