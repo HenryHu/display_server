@@ -6,32 +6,75 @@
         {% endif %}
         <title>Items</title>
         <style>
+            body {
+                background-color: rgb(50, 50, 50);
+            }
             ul {
                 font-size: 2em;
+                color: white;
             }
-            .half {
-                width: 50%;
+            .lefthalf {
+                width: 21%;
+            }
+            .righthalf {
+                width: 79%;
             }
             .bigtitle {
                 margin-top: 0;
-                line-height: 1em;
+                line-height: 0.5em;
                 font-weight: bold;
                 font-size: 2em;
+                color: white;
+            }
+            .hosts {
+                list-style-type: none;
+                padding-left: 0px;
+                margin-top: 0px;
+            }
+            .host {
+                font-size: 1.2em;
+                font-family: monospace;
+                white-space: pre;
+            }
+            .news {
+                margin-top: 0px;
+            }
+            .newspiece {
+                font-size: 1.3em;
+                font-family: Liberation Sans Narrow;
+                padding-left: 0px;
+                list-style-type: lower-greek;
+            }
+            a {
+                color: lightblue;
             }
         </style>
     </head>
     <body>
         <div style='width: 100%; display:inline-flex'>
-            <div class='half'>
-                <p class="bigtitle">Items</p>
-                <ul id="items">
+            <div class='lefthalf'>
+                <!-- <p class="bigtitle">Connectivity</p> -->
+                <ul id="hosts" class="hosts">
+                    {% autoescape false %}
+                    {%for host in hosts %}
+                    <li class="host">{{ host["name"] }} <b>{{ host["conn"] }}</b> {{ '%2d' % (host["rate"] * 100) }}% </li>
+                    {% endfor %}
+                    {% endautoescape %}
+                </ul>
+                <!-- <p class="bigtitle">Items</p> -->
+                <ul id="items" class="items">
                     {% for item in items %}
                     <li>{{ item["idx"] }} <b>{{ item["title"] }}</b> {{ item["content"] }}</li>
                     {% endfor %}
                 </ul>
             </div>
-            <div class='half'>
-                <p class="bigtitle">News</p>
+            <div class='righthalf'>
+                <!-- <p class="bigtitle">News</p> -->
+                <ul id="news" class="news">
+                    {% for piece in news %}
+                    <li class="newspiece">{{ piece["title"] }} <a href="{{ piece["content"] }}">link</a>{{ piece["content"] }}</li>
+                    {% endfor %}
+                </ul>
             </div>
         </div>
     </body>
