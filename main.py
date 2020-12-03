@@ -5,6 +5,7 @@ import subprocess
 import glob
 import logging
 import collections
+import time
 
 import feedparser
 
@@ -111,11 +112,18 @@ def collect_hosts():
     return hosts
 
 def collect_news():
-    feed = feedparser.parse("https://hnrss.org/newest?count=8")
+    feed = feedparser.parse("https://hnrss.org/newest?count=10")
     news = []
     for item in feed['items']:
         news.append({'title': item['title'], 'link': item['link'], 'content': ''})
     return news
+
+def collect_time():
+    return {"date": time.strftime("%Y/%m/%d %a"), "time": time.strftime("%H:%M:%S")}
+
+def collect_dhcp():
+    leases = get_output('cat', ['/var/lib/misc/dnsmasq.leases'])
+    return "DHCP leases: %d" % len(leases.split('\n'))
 
 @app.route('/page')
 def page():
@@ -123,10 +131,13 @@ def page():
 
     hosts = collect_hosts()
     news = collect_news()
+    time = collect_time()
     items = []
+    dhcp = collect_dhcp()
     for item in db.query_db("select * from items"):
         items.append(item)
-    return render_template('page.html', items=items, hosts=hosts, news=news, autorefresh=autorefresh)
+    return render_template('page.html', items=items, hosts=hosts, news=news, time=time,
+                           dhcp=dhcp, autorefresh=autorefresh)
 
 @app.route('/additem')
 def additem():

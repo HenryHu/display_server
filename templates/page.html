@@ -8,10 +8,13 @@
         <style>
             body {
                 background-color: rgb(50, 50, 50);
+                font-size: 6pt;
+                overflow: hidden;
+                color: white;
+                font-family: sans-serif;
             }
             ul {
                 font-size: 2em;
-                color: white;
             }
             .lefthalf {
                 width: 21%;
@@ -24,7 +27,6 @@
                 line-height: 0.5em;
                 font-weight: bold;
                 font-size: 2em;
-                color: white;
             }
             .hosts {
                 list-style-type: none;
@@ -48,12 +50,34 @@
             a {
                 color: lightblue;
             }
+            .times {
+                margin: 0px;
+                padding: 0px;
+            }
+            .date {
+                font-size: 2.5em;
+                font-family: monospace;
+                line-height: 1em;
+            }
+            .time {
+                font-size: 4.5em;
+                font-family: monospace;
+                line-height: 1.2em;
+            }
+            .dhcp {
+                font-family: monospace;
+                font-size: 2em;
+            }
         </style>
     </head>
     <body>
         <div style='width: 100%; display:inline-flex'>
             <div class='lefthalf'>
                 <!-- <p class="bigtitle">Connectivity</p> -->
+                <div class="times">
+                    <div class="date">{{ time["date"] }}</div>
+                    <div class="time">{{ time["time"] }}</div>
+                </div>
                 <ul id="hosts" class="hosts">
                     {% autoescape false %}
                     {%for host in hosts %}
@@ -67,12 +91,15 @@
                     <li>{{ item["idx"] }} <b>{{ item["title"] }}</b> {{ item["content"] }}</li>
                     {% endfor %}
                 </ul>
+                <div id="dhcp" class="dhcp">
+                    {{ dhcp }}
+                </div>
             </div>
             <div class='righthalf'>
                 <!-- <p class="bigtitle">News</p> -->
                 <ul id="news" class="news">
                     {% for piece in news %}
-                    <li class="newspiece">{{ piece["title"] }} <a href="{{ piece["content"] }}">link</a>{{ piece["content"] }}</li>
+                    <li class="newspiece">{{ piece["title"] }} <a href="{{ piece["link"] }}">link</a>{{ piece["content"] }}</li>
                     {% endfor %}
                 </ul>
             </div>
