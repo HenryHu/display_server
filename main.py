@@ -125,6 +125,24 @@ def collect_dhcp():
     leases = get_output('cat', ['/var/lib/misc/dnsmasq.leases'])
     return "DHCP leases: %d" % len(leases.split('\n'))
 
+def collect_msg():
+    msg = []
+
+    now = time.localtime()
+    if now.tm_hour >= 0 and now.tm_hour <= 5:
+        msg.append('<div class="warning">SLEEP!!!</div>')
+
+    return ''.join(msg)
+
+def collect_timer():
+    now = time.localtime()
+    if now.tm_min >= 55 and now.tm_min <= 59:
+        timer = {'state': "RELAX", 'style': "relax"}
+        get_output("espeak-ng", ["relax"])
+    else:
+        timer = {'state': "WORK", 'style': "work"}
+    return timer
+
 @app.route('/page')
 def page():
     autorefresh = request.args.get('autorefresh', 'true')
@@ -136,8 +154,10 @@ def page():
     dhcp = collect_dhcp()
     for item in db.query_db("select * from items"):
         items.append(item)
+    msg = collect_msg()
+    timer = collect_timer()
     return render_template('page.html', items=items, hosts=hosts, news=news, time=time,
-                           dhcp=dhcp, autorefresh=autorefresh)
+                           dhcp=dhcp, msg=msg, timer=timer, autorefresh=autorefresh)
 
 @app.route('/additem')
 def additem():
