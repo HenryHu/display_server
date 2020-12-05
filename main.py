@@ -15,6 +15,8 @@ from flask import Flask, request, render_template, g
 app = Flask("Display Server")
 db = dblib.DB(app)
 
+RELAX_MARK = "/tmp/relax_inhibit"
+
 host_info = {}
 
 @app.teardown_appcontext
@@ -134,11 +136,21 @@ def collect_msg():
 
     return ''.join(msg)
 
+def should_notify_relax():
+    if not os.path.exists(RELAX_MARK): return True
+    st = os.stat(RELAX_MARK)
+    if st.st_mtime > time.time() - 300: return False
+    return True
+
 def collect_timer():
     now = time.localtime()
     if now.tm_min >= 55 and now.tm_min <= 59:
-        timer = {'state': "RELAX", 'style': "relax"}
-        get_output("espeak-ng", ["relax"])
+        timer = {'state': "RELAX"}
+        if should_notify_relax():
+            get_output("espeak-ng", ["relax"])
+            timer['style'] = "relax"
+        else:
+            timer['style'] = "relax-inhibit"
     else:
         timer = {'state': "WORK", 'style': "work"}
     return timer
