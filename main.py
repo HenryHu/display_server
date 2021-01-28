@@ -114,7 +114,7 @@ def collect_hosts():
     return hosts
 
 def collect_news():
-    feed = feedparser.parse("https://hnrss.org/newest?count=10")
+    feed = feedparser.parse("https://hnrss.org/newest?count=12")
     news = []
     for item in feed['items']:
         news.append({'title': item['title'], 'link': item['link'], 'content': ''})
