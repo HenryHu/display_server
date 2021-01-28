@@ -144,15 +144,20 @@ def should_notify_relax():
 
 def collect_timer():
     now = time.localtime()
-    if now.tm_min >= 55 and now.tm_min <= 59:
-        timer = {'state': "RELAX"}
-        if should_notify_relax():
-            get_output("espeak-ng", ["relax"])
-            timer['style'] = "relax"
+    if now.tm_hour >= 10 and now.tm_hour <= 19:
+        if now.tm_min >= 55 and now.tm_min <= 59:
+            timer = {'state': "RELAX"}
+            if should_notify_relax():
+                get_output("espeak-ng", ["relax"])
+                timer['style'] = "relax"
+            else:
+                timer['style'] = "relax-inhibit"
         else:
-            timer['style'] = "relax-inhibit"
+            timer = {'state': "WORK", 'style': "work"}
+    elif now.tm_hour >= 1 and now.tm_hour <= 8:
+        timer = {'state': "SLEEP", 'style': "sleep"}
     else:
-        timer = {'state': "WORK", 'style': "work"}
+        timer = {'state': "PLAY", 'style': "play"}
     return timer
 
 @app.route('/page')
