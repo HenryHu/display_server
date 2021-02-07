@@ -142,9 +142,15 @@ def should_notify_relax():
     if st.st_mtime > time.time() - 300: return False
     return True
 
+def work_time(localtime):
+    if localtime.tm_hour >= 10 and localtime.tm_hour <= 19:
+        if localtime.tm_wday >= 0 and localtime.tm_wday <= 4:
+            return True
+    return False
+
 def collect_timer():
     now = time.localtime()
-    if now.tm_hour >= 10 and now.tm_hour <= 19:
+    if work_time(now):
         if now.tm_min >= 55 and now.tm_min <= 59:
             timer = {'state': "RELAX"}
             if should_notify_relax():
