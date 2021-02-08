@@ -81,6 +81,7 @@ def collect_hosts():
     maxlen = 0
     for line in open('hosts.txt').read().split('\n'):
         if not ' ' in line: continue
+        if line[:1] == '#': continue
         (name, target) = line.split(' ')
         targets[name] = target
         if len(name) > maxlen: maxlen = len(name)
