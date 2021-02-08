@@ -122,6 +122,16 @@
                 color: lightyellow;
                 border-radius: 5px;
             }
+            .title {
+                font-size: 2em;
+                font-weight: bold;
+            }
+            .artist {
+                font-size: 2em;
+            }
+            .album {
+                font-size: 2em;
+            }
         </style>
     </head>
     <body>
@@ -157,6 +167,11 @@
                     {% autoescape false %}
                     <div class="{{ timer["style"] }}">{{ timer["state"] }}</div>
                     {% endautoescape %}
+                </div>
+                <div id="music" class="music">
+                    <div class="title">{{ music["title"] }}</div>
+                    <div class="artist">{{ music["artist"] }}</div>
+                    <marquee class="album" scrolldelay="20">{{ music["album"] }}</marquee>
                 </div>
             </div>
             <div class='righthalf'>

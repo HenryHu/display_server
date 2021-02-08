@@ -23,10 +23,13 @@ host_info = {}
 def teardown(exception):
     db.teardown()
 
-def get_output(command, args):
+def get_output(command, args, line_limit=None):
     app.logger.info("running %s %s" % (command, args))
     try:
-        return subprocess.check_output(["env", "DISPLAY=:0", command, *args]).decode('utf-8')
+        result = subprocess.check_output(["env", "DISPLAY=:0", command, *args]).decode('utf-8')
+        if line_limit:
+            return '\n'.join(result.split('\n')[:line_limit])
+        return result
     except:
         return None
 
@@ -166,6 +169,12 @@ def collect_timer():
         timer = {'state': "PLAY", 'style': "play"}
     return timer
 
+def collect_music():
+    title = get_output('mpc', ['-f', '%title%'], line_limit=1)
+    artist = get_output('mpc', ['-f', '%artist%'], line_limit=1)
+    album = get_output('mpc', ['-f', '%album%'], line_limit=1)
+    return {'title': title, 'artist': artist, 'album': album}
+
 @app.route('/page')
 def page():
     autorefresh = request.args.get('autorefresh', 'true')
@@ -179,8 +188,10 @@ def page():
         items.append(item)
     msg = collect_msg()
     timer = collect_timer()
+    music = collect_music()
     return render_template('page.html', items=items, hosts=hosts, news=news, time=time,
-                           dhcp=dhcp, msg=msg, timer=timer, autorefresh=autorefresh)
+                           dhcp=dhcp, msg=msg, timer=timer, music=music,
+                           autorefresh=autorefresh)
 
 @app.route('/additem')
 def additem():
