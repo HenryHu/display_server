@@ -6,6 +6,7 @@ import glob
 import logging
 import collections
 import time
+import datetime
 
 import feedparser
 
@@ -125,7 +126,11 @@ def collect_news():
     return news
 
 def collect_time():
-    return {"date": time.strftime("%Y/%m/%d %a"), "time": time.strftime("%H:%M:%S")}
+    local = time.localtime()
+    pactime = datetime.datetime.now(datetime.timezone(datetime.timedelta(
+        seconds=local.tm_gmtoff - 3*3600)))
+    return {"date": time.strftime("%Y/%m/%d %a"), "time": time.strftime("%H:%M:%S"),
+            "pactime": pactime.strftime("%H:%M:%S")}
 
 def collect_dhcp():
     leases = get_output('cat', ['/var/lib/misc/dnsmasq.leases'])

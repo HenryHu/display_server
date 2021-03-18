@@ -65,6 +65,17 @@
                 font-family: monospace;
                 line-height: 1.2em;
             }
+            .tz_label {
+                font-size: 2em;
+                font-family: monospace;
+                line-height: 1.2em;
+            }
+            .alttime {
+                font-size: 2em;
+                font-family: monospace;
+                line-height: 1.2em;
+                font-weight: bold;
+            }
             .dhcp {
                 font-family: monospace;
                 font-size: 2em;
@@ -142,6 +153,7 @@
                 <div class="times">
                     <div class="date">{{ time["date"] }}</div>
                     <div class="time">{{ time["time"] }}</div>
+                    <span class="tz_label">Pacific:</span><span class="alttime"> {{ time["pactime"] }}</span>
                 </div>
                 <ul id="hosts" class="hosts">
                     {% autoescape false %}
