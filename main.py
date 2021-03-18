@@ -164,7 +164,8 @@ def collect_timer():
                 timer['style'] = "relax-inhibit"
         else:
             timer = {'state': "WORK", 'style': "work"}
-    elif now.tm_hour >= 1 and now.tm_hour <= 8:
+    elif (now.tm_hour >= 1 and now.tm_hour <= 8 or
+          now.tm_hour >= 0 and now.tm_hour <= 1 and now.tm_min >= 30):
         timer = {'state': "SLEEP", 'style': "sleep"}
     else:
         timer = {'state': "PLAY", 'style': "play"}
@@ -190,6 +191,11 @@ def page():
     msg = collect_msg()
     timer = collect_timer()
     music = collect_music()
+    if timer['state'] == 'SLEEP':
+        return render_template('page_night.html', items=items, hosts=hosts, news=news, time=time,
+                               dhcp=dhcp, msg=msg, timer=timer, music=music,
+                               autorefresh=autorefresh)
+
     return render_template('page.html', items=items, hosts=hosts, news=news, time=time,
                            dhcp=dhcp, msg=msg, timer=timer, music=music,
                            autorefresh=autorefresh)

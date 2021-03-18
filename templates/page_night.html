@@ -1,0 +1,159 @@
+<!doctype html>
+<html>
+    <head>
+        {% if autorefresh %}
+        <meta http-equiv="refresh" content="5">
+        {% endif %}
+        <title>Items</title>
+        <style>
+            body {
+                background-color: black;
+                font-size: 7.5pt;
+                overflow: hidden;
+                color: white;
+                font-family: sans-serif;
+            }
+            ul {
+                font-size: 2em;
+            }
+            .lefthalf {
+                width: 21%;
+                z-index: 100;
+            }
+            .righthalf {
+                width: 79%;
+            }
+            .bigtitle {
+                margin-top: 0;
+                line-height: 0.5em;
+                font-weight: bold;
+                font-size: 2em;
+            }
+            .hosts {
+                list-style-type: none;
+                padding-left: 0px;
+                margin-top: 0px;
+            }
+            .host {
+                font-size: 1.2em;
+                font-family: monospace;
+                white-space: pre;
+            }
+            .news {
+                margin-top: 0px;
+            }
+            .newspiece {
+                font-size: 1.3em;
+                font-family: Liberation Sans Narrow;
+                padding-left: 0px;
+                list-style-type: lower-greek;
+            }
+            a {
+                color: lightblue;
+            }
+            .times {
+                margin: 0px;
+                padding: 0px;
+            }
+            .date {
+                font-size: 2.5em;
+                font-family: monospace;
+                line-height: 1em;
+            }
+            .time {
+                font-size: 4.5em;
+                font-family: monospace;
+                line-height: 1.2em;
+            }
+            .dhcp {
+                font-family: monospace;
+                font-size: 2em;
+                display: none;
+            }
+            .msgs {
+                font-family: sans-serif;
+                font-size: 2em;
+            }
+            .center {
+                color: gray;
+                width: 90%;
+                border-radius: 10px;
+                position: absolute;
+                padding: 0px;
+                margin: 0px auto;
+                top: 30%;
+                left: 5%;
+                text-align: center;
+            }
+            .warning {
+                color: #F2542D;
+                font-weight: bold;
+                font-size: 5em;
+                background-color: rgba(252, 191, 73, 0.9);
+                width: 90%;
+                border-radius: 10px;
+                position: absolute;
+                padding: 0px;
+                margin: 0px auto;
+                top: 30%;
+                left: 5%;
+                text-align: center;
+            }
+            .timers {
+                font-size: 5em;
+                font-family: sans-serif;
+                text-align: center;
+                margin: 5px;
+            }
+            @keyframes blinking {
+                0% { opacity: 100%; }
+                50% { opacity: 20%; }
+                100% { opacity: 100%; }
+            }
+            .work {
+                background-color: darkblue;
+                color: white;
+                border-radius: 5px;
+            }
+            .relax {
+                background-color: lightgreen;
+                color: black;
+                border-radius: 5px;
+                animation: blinking 1s infinite;
+            }
+            .relax-inhibit {
+                background-color: yellow;
+                color: black;
+                border-radius: 5px;
+            }
+            .play {
+                color: lightgreen;
+                border-radius: 5px;
+            }
+            .sleep {
+                color: lightyellow;
+                border-radius: 5px;
+            }
+            .title {
+                font-size: 2em;
+                font-weight: bold;
+            }
+            .artist {
+                font-size: 2em;
+            }
+            .album {
+                font-size: 2em;
+            }
+        </style>
+    </head>
+    <body>
+        <div style='width: 100%; display:inline-flex'>
+            <div class='center'>
+                <div class="times">
+                    <div class="date">{{ time["date"] }}</div>
+                    <div class="time">{{ time["time"] }}</div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
