@@ -43,7 +43,7 @@ def run_command(command, args):
 
 @app.route('/')
 def root():
-    return 'running'
+    return render_template('index.html')
 
 @app.route('/notify/<title>')
 def notify(title):

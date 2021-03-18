@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Status</title>
+        <style>
+body {
+    margin: 0;
+}
+        </style>
+        <script>
+            function refreshpage() {
+                document.getElementById('realpage').contentWindow.location.reload();
+                setTimeout(refreshpage, 5000);
+            }
+setTimeout(refreshpage, 5000);
+        </script>
+    </head>
+    <body>
+        <iframe src="/page?autorefresh=" frameborder="0" width="100%" height="100%" style="position:absolute;height:100%" id="realpage"/>
+    </body>
+</html>
