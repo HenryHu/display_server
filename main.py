@@ -20,19 +20,23 @@ RELAX_MARK = "/tmp/relax_inhibit"
 
 host_info = {}
 
+
 @app.teardown_appcontext
 def teardown(exception):
     db.teardown()
 
+
 def get_output(command, args, line_limit=None):
     app.logger.info("running %s %s" % (command, args))
     try:
-        result = subprocess.check_output(["env", "DISPLAY=:0", command, *args]).decode('utf-8')
+        result = subprocess.check_output(["env", "DISPLAY=:0",
+                                          command, *args]).decode('utf-8')
         if line_limit:
             return '\n'.join(result.split('\n')[:line_limit])
         return result
     except:
         return None
+
 
 def run_command(command, args):
     app.logger.info("running %s %s" % (command, args))
@@ -42,9 +46,11 @@ def run_command(command, args):
         return False
     return True
 
+
 @app.route('/')
 def root():
     return render_template('index.html')
+
 
 @app.route('/notify/<title>')
 def notify(title):
@@ -62,7 +68,8 @@ def notify(title):
                 found = True
                 break
         if not found:
-            if len(files) > 0: icon = files[0]
+            if len(files) > 0:
+                icon = files[0]
 
     args = [title, message, '-t', timeout]
     if icon:
@@ -77,19 +84,23 @@ def notify(title):
     else:
         return 'error'
 
+
 def collect_hosts():
     targets = {}
     maxlen = 0
     for line in open('hosts.txt').read().split('\n'):
-        if not ' ' in line: continue
-        if line[:1] == '#': continue
+        if ' ' not in line:
+            continue
+        if line[:1] == '#':
+            continue
         (name, target) = line.split(' ')
         targets[name] = target
-        if len(name) > maxlen: maxlen = len(name)
+        if len(name) > maxlen:
+            maxlen = len(name)
 
     hosts = []
     for name, target in targets.items():
-        if not name in host_info:
+        if name not in host_info:
             host_info[name] = {"succ": 0, "total": 0, "history": []}
 
         conn = "?"
@@ -100,7 +111,8 @@ def collect_hosts():
             info["history"].append(1)
 
             color = 'lightgreen'
-            if sum(info["history"]) != len(info['history']): color = "yellow"
+            if sum(info["history"]) != len(info['history']):
+                color = "yellow"
             conn = '<div style="display: inline; color: %s"> OK</div>' % color
             style = "conn_good"
         else:
@@ -118,23 +130,31 @@ def collect_hosts():
         hosts.append(host)
     return hosts
 
+
 def collect_news():
-    feed = feedparser.parse("https://hnrss.org/newest?count=12")
+    feed = feedparser.parse("https://hnrss.org/frontpage?count=12")
     news = []
     for item in feed['items']:
-        news.append({'title': item['title'], 'link': item['link'], 'content': ''})
+        news.append({'title': item['title'], 'link': item['link'],
+                     'content': ''})
     return news
+
 
 def collect_time():
     local = time.localtime()
     pactime = datetime.datetime.now(datetime.timezone(datetime.timedelta(
         seconds=local.tm_gmtoff - 3*3600)))
-    return {"date": time.strftime("%Y/%m/%d %a"), "time": time.strftime("%H:%M:%S"),
+    return {"date": time.strftime("%Y/%m/%d %a"),
+            "time": time.strftime("%H:%M:%S"),
             "pactime": pactime.strftime("%H:%M:%S")}
+
 
 def collect_dhcp():
     leases = get_output('cat', ['/var/lib/misc/dnsmasq.leases'])
+    if leases is None:
+        return ''
     return "DHCP leases: %d" % len(leases.split('\n'))
+
 
 def collect_msg():
     msg = []
@@ -145,17 +165,22 @@ def collect_msg():
 
     return ''.join(msg)
 
+
 def should_notify_relax():
-    if not os.path.exists(RELAX_MARK): return True
+    if not os.path.exists(RELAX_MARK):
+        return True
     st = os.stat(RELAX_MARK)
-    if st.st_mtime > time.time() - 300: return False
+    if st.st_mtime > time.time() - 300:
+        return False
     return True
+
 
 def work_time(localtime):
     if localtime.tm_hour >= 10 and localtime.tm_hour <= 19:
         if localtime.tm_wday >= 0 and localtime.tm_wday <= 4:
             return True
     return False
+
 
 def collect_timer():
     now = time.localtime()
@@ -197,13 +222,16 @@ def page():
     timer = collect_timer()
     music = collect_music()
     if timer['state'] == 'SLEEP':
-        return render_template('page_night.html', items=items, hosts=hosts, news=news, time=time,
+        return render_template('page_night.html', items=items, hosts=hosts,
+                               news=news, time=time,
                                dhcp=dhcp, msg=msg, timer=timer, music=music,
                                autorefresh=autorefresh)
 
-    return render_template('page.html', items=items, hosts=hosts, news=news, time=time,
+    return render_template('page.html', items=items, hosts=hosts, news=news,
+                           time=time,
                            dhcp=dhcp, msg=msg, timer=timer, music=music,
                            autorefresh=autorefresh)
+
 
 @app.route('/additem')
 def additem():
@@ -211,9 +239,12 @@ def additem():
     content = request.args.get('content', '')
     if not title and not content:
         return 'error: nothing to add'
-    if not title: title = '<no title>'
-    db.execute_db("insert into items (title, content) values (?, ?)", [title, content])
+    if not title:
+        title = '<no title>'
+    db.execute_db(
+        "insert into items (title, content) values (?, ?)", [title, content])
     return 'added'
+
 
 @app.route('/delitem/<int:index>')
 def delitem(index):
