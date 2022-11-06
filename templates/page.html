@@ -66,12 +66,12 @@
                 line-height: 1.2em;
             }
             .tz_label {
-                font-size: 2em;
+                font-size: 2.1em;
                 font-family: monospace;
                 line-height: 1.2em;
             }
             .alttime {
-                font-size: 2em;
+                font-size: 2.1em;
                 font-family: monospace;
                 line-height: 1.2em;
                 font-weight: bold;
@@ -145,15 +145,37 @@
                 font-size: 2em;
             }
         </style>
+        <script>
+            function updateTime() {
+                var now = new Date();
+                var curDate = now.toLocaleString("en-US", {year: "numeric"}) + "/" +
+                    now.toLocaleString("en-US", {month: "2-digit"}) + "/" +
+                    now.toLocaleString("en-US", {day: "2-digit"}) + " " +
+                    now.toLocaleString("en-US", {weekday: "short"});
+                var curTime = now.toLocaleString("en-US", {
+                    hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false});
+                var pacificTime = now.toLocaleString("en-US", {
+                    hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false, timeZone: "PST8PDT"});
+
+                var dateDiv = document.getElementById('date');
+                var timeDiv = document.getElementById('time');
+                var pacificTimeDiv = document.getElementById('pactime');
+                dateDiv.textContent = curDate;
+                timeDiv.textContent = curTime;
+                pacificTimeDiv.textContent = pacificTime;
+            }
+            setInterval(updateTime, 100);
+            updateTime();
+        </script>
     </head>
     <body>
         <div style='width: 100%; display:inline-flex'>
             <div class='lefthalf'>
                 <!-- <p class="bigtitle">Connectivity</p> -->
                 <div class="times">
-                    <div class="date">{{ time["date"] }}</div>
-                    <div class="time">{{ time["time"] }}</div>
-                    <span class="tz_label">Pacific:</span><span class="alttime"> {{ time["pactime"] }}</span>
+                    <div class="date" id="date">{{ time["date"] }}</div>
+                    <div class="time" id="time">{{ time["time"] }}</div>
+                    <span class="tz_label">Pacific:</span> <span class="alttime" id="pactime">{{ time["pactime"] }}</span>
                 </div>
                 <ul id="hosts" class="hosts">
                     {% autoescape false %}
@@ -191,7 +213,12 @@
                 <!-- <p class="bigtitle">News</p> -->
                 <ul id="news" class="news">
                     {% for piece in news %}
-                    <li class="newspiece">{{ piece["title"] }} <a href="{{ piece["link"] }}">link</a>{{ piece["content"] }}</li>
+                    <li class="newspiece">
+                        {{ piece["title"] }} 
+                        {% if piece["link"] %}
+                        <a href="{{ piece["link"] }}">link</a>
+                        {% endif %}
+                        {{ piece["content"] }}</li>
                     {% endfor %}
                 </ul>
             </div>
