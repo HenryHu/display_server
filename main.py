@@ -34,8 +34,9 @@ def get_output(command, args, line_limit=None):
         if line_limit:
             return '\n'.join(result.split('\n')[:line_limit])
         return result
-    except:
-        return None
+    except Exception as e:
+        app.logger.error(e)
+        return 'error: %r' % e
 
 
 def run_command(command, args):
