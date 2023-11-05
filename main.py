@@ -208,6 +208,35 @@ def collect_music():
     album = get_output('mpc', ['-f', '%album%'], line_limit=1)
     return {'title': title, 'artist': artist, 'album': album}
 
+def get_kasa_state(name):
+    return get_output("/home/henryhu/proj/kasa/bin/python3",
+                        ["/home/henryhu/proj/kasa/bin/state.py", name])
+
+def get_tplink_state(name):
+    ret = get_output("python3",
+                        ["/home/henryhu/proj/tplink/cli.py", name, "state"])
+    ret = ret.split('\n')
+    if len(ret) == 1:
+        return "unknown"
+    else:
+        return ret[1]
+
+def get_tuya_state(name):
+    return get_output("/home/henryhu/proj/tuya/bin/python3",
+                        ["/home/henryhu/proj/tuya/state.py", name])
+
+def get_buttons():
+    buttons = []
+    buttons.append({"id": "rabbit", "class": "home", "img": "rabbit.png",
+                    "text": "rabbit: %s" % get_kasa_state("rabbit") })
+    buttons.append({"id": "fire", "text": "fire: %s" % get_tplink_state("fire"), "class": "home",
+                    "img": "fire.png"})
+    buttons.append({"id": "candle", "text": "candle: %s" % get_tplink_state("candle"), "class": "home",
+                    "img": "candle.png"})
+    buttons.append({"id": "sunny", "text": "sunny: %s" % get_tuya_state("sunny"), "class": "home",
+                    "img": "sunny.png"})
+    return buttons
+
 @app.route('/page')
 def page():
     autorefresh = request.args.get('autorefresh', 'true')
@@ -222,15 +251,15 @@ def page():
     msg = collect_msg()
     timer = collect_timer()
     music = collect_music()
+    buttons = get_buttons()
     if timer['state'] == 'SLEEP':
         return render_template('page_night.html', items=items, hosts=hosts,
                                news=news, time=time,
                                dhcp=dhcp, msg=msg, timer=timer, music=music,
                                autorefresh=autorefresh)
 
-    return render_template('page.html', items=items, hosts=hosts, news=news,
-                           time=time,
-                           dhcp=dhcp, msg=msg, timer=timer, music=music,
+    return render_template('page.html', items=items, hosts=hosts, news=news, time=time,
+                           dhcp=dhcp, msg=msg, timer=timer, music=music, buttons=buttons,
                            autorefresh=autorefresh)
 
 
@@ -253,3 +282,20 @@ def delitem(index):
         return 'error: nothing to delete'
     db.execute_db("delete from items where idx = ?", [index])
     return 'deleted'
+
+@app.route('/button_click/<string:id>', methods = ['POST'])
+def button_click(id):
+    if id == "rabbit":
+        output = get_output("/home/henryhu/proj/kasa/bin/python3",
+                            ["/home/henryhu/proj/kasa/bin/toggle.py", "rabbit"])
+    if id == "fire":
+        output = get_output("python3",
+                            ["/home/henryhu/proj/tplink/cli.py", "fire", "toggle"])
+    if id == "candle":
+        output = get_output("python3",
+                            ["/home/henryhu/proj/tplink/cli.py", "candle", "toggle"])
+    if id == "sunny":
+        output = get_output("/home/henryhu/proj/tuya/bin/python3",
+                            ["/home/henryhu/proj/tuya/toggle.py", "sunny"])
+
+    return output
