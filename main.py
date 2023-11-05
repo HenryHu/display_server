@@ -145,7 +145,7 @@ def collect_time():
     pactime = datetime.datetime.now(datetime.timezone(datetime.timedelta(
         seconds=local.tm_gmtoff - 3*3600)))
     return {"date": time.strftime("%Y/%m/%d %a"),
-            "time": time.strftime("%H:%M:%S"),
+            "time": time.strftime("%I:%M:%S"),
             "pactime": pactime.strftime("%H:%M:%S")}
 
 
