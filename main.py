@@ -132,7 +132,7 @@ def collect_hosts():
 
 
 def collect_news():
-    feed = feedparser.parse("https://hnrss.org/frontpage?count=12")
+    feed = feedparser.parse("https://hnrss.org/frontpage?count=3")
     news = []
     for item in feed['items']:
         news.append({'title': item['title'], 'link': item['link'],
