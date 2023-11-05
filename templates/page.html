@@ -8,6 +8,8 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
         <script src="{{ url_for('static', filename='update.js') }}">
         </script>
+        <script src="{{ url_for('static', filename='button.js') }}">
+        </script>
     </head>
     <body>
         <div style='width: 100%; display:inline-flex'>
@@ -49,6 +51,7 @@
                     <div class="artist">{{ music["artist"] }}</div>
                     <marquee class="album" scrolldelay="20">{{ music["album"] }}</marquee>
                 </div>
+                <div id="status" class="status"></div>
             </div>
             <div class='righthalf'>
                 <!-- <p class="bigtitle">News</p> -->
@@ -68,8 +71,14 @@
                 </div>
                 <div id="buttons" class="buttons">
                     {% for button in buttons %}
-                    <div id="button_{{ button["id"] }}">
-                    </div>
+                    <figure id="button_{{ button["id"] }}">
+                        <button id="button_input_{{ button["id"] }}" class="button_{{ button["class"] }}" onclick="button_click('{{ button["id"] }}');">
+                            <img src="{{ url_for('static', filename=button["img"]) }}" class="button_{{ button["class"] }}_image"/>
+                            <figcaption id="button_{{ button["id"] }}_text" class="button_{{ button["class"] }}_text">
+                                {{ button["text"] }}
+                            </figcaption>
+                        </button>
+                    </figure>
                     {% endfor %}
                 </div>
             </div>
