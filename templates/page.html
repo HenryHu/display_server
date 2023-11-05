@@ -71,14 +71,14 @@
                 </div>
                 <div id="buttons" class="buttons">
                     {% for button in buttons %}
-                    <figure id="button_{{ button["id"] }}">
+                    <div id="button_{{ button["id"] }}">
                         <button id="button_input_{{ button["id"] }}" class="button_{{ button["class"] }}" onclick="button_click('{{ button["id"] }}');">
                             <img src="{{ url_for('static', filename=button["img"]) }}" class="button_{{ button["class"] }}_image"/>
-                            <figcaption id="button_{{ button["id"] }}_text" class="button_{{ button["class"] }}_text">
+                            <div id="button_{{ button["id"] }}_text" class="button_{{ button["class"] }}_text">
                                 {{ button["text"] }}
-                            </figcaption>
+                            </div>
                         </button>
-                    </figure>
+                    </div>
                     {% endfor %}
                 </div>
             </div>

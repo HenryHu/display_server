@@ -210,31 +210,45 @@ def collect_music():
 
 def get_kasa_state(name):
     return get_output("/home/henryhu/proj/kasa/bin/python3",
-                        ["/home/henryhu/proj/kasa/bin/state.py", name])
+                        ["/home/henryhu/proj/kasa/bin/state.py", name]).strip()
 
 def get_tplink_state(name):
     ret = get_output("python3",
                         ["/home/henryhu/proj/tplink/cli.py", name, "state"])
     ret = ret.split('\n')
     if len(ret) == 1:
-        return "?"
+        return "unk"
     else:
-        return ret[1]
+        return ret[1].strip()
 
 def get_tuya_state(name):
     return get_output("/home/henryhu/proj/tuya/bin/python3",
-                        ["/home/henryhu/proj/tuya/state.py", name])
+                        ["/home/henryhu/proj/tuya/state.py", name]).strip()
+
+def get_button_state(id, kind):
+    if kind == "kasa": return get_kasa_state(id)
+    if kind == "tplink": return get_tplink_state(id)
+    if kind == "tuya": return get_tuya_state(id)
+    return ''
+
+def get_buttons_config():
+    buttons_config = {}
+    for line in open('buttons.txt').read().split('\n'):
+        if ',' not in line:
+            continue
+        if line[:1] == '#':
+            continue
+        (id, text, kind, icon) = line.split(',')
+        buttons_config[id] = {"text": text, "kind": kind, "icon": icon}
+    return buttons_config
 
 def get_buttons():
     buttons = []
-    buttons.append({"id": "rabbit", "class": "home", "img": "rabbit.png",
-                    "text": "rabbit: %s" % get_kasa_state("rabbit") })
-    buttons.append({"id": "fire", "text": "fire: %s" % get_tplink_state("fire"), "class": "home",
-                    "img": "fire.png"})
-    buttons.append({"id": "candle", "text": "candle: %s" % get_tplink_state("candle"), "class": "home",
-                    "img": "candle.png"})
-    buttons.append({"id": "sunny", "text": "sunny: %s" % get_tuya_state("sunny"), "class": "home",
-                    "img": "sunny.png"})
+    for button_id, button_config in get_buttons_config().items():
+        state = get_button_state(button_id, button_config["kind"])
+        buttons.append({"id": button_id, "class": "home_%s" % state,
+                        "img": button_config["icon"],
+                        "text": button_config["text"] % state })
     return buttons
 
 @app.route('/page')
