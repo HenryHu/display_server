@@ -217,7 +217,7 @@ def get_tplink_state(name):
                         ["/home/henryhu/proj/tplink/cli.py", name, "state"])
     ret = ret.split('\n')
     if len(ret) == 1:
-        return "unknown"
+        return "?"
     else:
         return ret[1]
 
